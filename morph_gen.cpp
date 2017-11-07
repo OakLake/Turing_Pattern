@@ -27,8 +27,6 @@ void make_sym(Mat);
 double my_rand();
 void add_noise(Mat,int,double);
 void calc_scale(Mat,Mat,Mat,int);
-// void apply_gradient(Mat,Mat);
-void addW(Mat,Mat,int);
 
 ///////////////////////
 
@@ -142,39 +140,6 @@ int my_remap(int val,int H, int L,int H2,int L2){
   return (L2 + (val - L) * (H2 - L2) / (H - L));
 }
 
-/*
-void apply_gradient(Mat src,Mat grad_mat){
-  for(int row=0;row<src.rows;row++){
-    for(int col=0;col<src.cols;col++){
-      src.at<schar>(col,row) += grad_mat.at<schar>(col,row);
-    }
-  }
-}*/
-
-void addW(Mat global,Mat scale, int weight){
-  Mat temp = global.clone();
-  global  = temp + weight*scale;
-
-  // Too much syntax
-  // for(int r=0;r<global.rows;++row){
-  //   schar* g_pix = global.ptr<schar>(r);
-  //   schar* s_pix = scale.ptr<schar>(r);
-  //   for (int c=0;c<global.cols;++c){
-  //     *g_pix++ += *s_pix++ * weight;
-  //   }
-  // }
-  //// SLOW !
-  // int update,current;
-  // for (int row=0;row<global.rows;row++){
-  //   for(int col=0;col<global.cols;col++){
-  //     update = weight*scale.at<schar>(col,row);
-  //     current = global.at<schar>(col,row);
-  //     global.at<schar>(col,row) = update + current;
-  //   }
-  // }
-
-
-}
 
 void calc_reagnet(Mat src, Mat activ,Mat inhib, int p, int n){
   Mat padded_Mat = src.clone();
@@ -193,15 +158,12 @@ void calc_reagnet(Mat src, Mat activ,Mat inhib, int p, int n){
 
     for(int col=pad;col<src.cols+pad;col++){
 
-      // pixVal = padded_Mat.at<schar>(col,row);
 
       activ_conc = mean(padded_Mat(Rect(col-w_p,row-w_p,p,p)) )[0];
       inhib_conc = mean(padded_Mat(Rect(col-w_n,row-w_n,n,n)) )[0];
 
       *ac++ = activ_conc;
       *nh++ = inhib_conc;
-      // activ.at<schar>(row-pad,col-pad) = activ_conc;
-      // inhib.at<schar>(row-pad,col-pad) = inhib_conc;
 
     }
   }
@@ -225,19 +187,6 @@ void calc_scale(Mat activ,Mat inhib,Mat chnge,int rate){
       }
     }
   }
-  // int ac,nh;
-  // for (int row=0;row<activ.rows;row++){
-  //   for(int col=0;col<activ.cols;col++){
-  //     ac = activ.at<schar>(col,row);
-  //     nh = inhib.at<schar>(col,row);
-  //     if (ac >= nh){
-  //       chnge.at<schar>(col,row) = rate;
-  //     }else{
-  //       chnge.at<schar>(col,row) = -rate;
-  //     }
-  //
-  //     }
-  //   }
 
   }
 
@@ -262,17 +211,7 @@ void make_sym(Mat scale){
       *(pix_rp+(nCols-j)) = avg;
     }
   }
-  // --
-  // for(int i=0;i<clone.rows/2+1;i++){
-  //   for(int j=0;j<clone.cols/2+1;j++){
-  //     int avg = 0.25*(clone.at<schar>(j,i) + clone.at<schar>(j,clone.rows-i) + clone.at<schar>(clone.cols-j) + clone.at<schar>(clone.cols-j,clone.rows-i));
-  //     scale.at<schar>(j,i) = avg;
-  //     scale.at<schar>(j,scale.rows-i) = avg;
-  //     scale.at<schar>(scale.cols-j,i) = avg;
-  //     scale.at<schar>(scale.cols-j,scale.rows-i) = avg;
-  //   }
-  // }
-  // --
+
 }
 
 
